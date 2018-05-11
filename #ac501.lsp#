@@ -1,0 +1,105 @@
+                                        ; SLIME 2.20
+CL-USER> (union '(a b c) '(b c d))
+(A B C D)
+CL-USER> (defun new-union (lst1 lst2) 
+           (dolist obj lst2 lst1
+                   (if (not (member obj lst1))
+                       (setq lst1 (append lst1 (lisp obj)))
+                       NIL
+                       )))
+                                        ; in: DEFUN NEW-UNION
+                                        ;     (DOLIST OBJ
+                                        ;      LST2
+                                        ;      LST1
+                                        ;       (IF (NOT (MEMBER OBJ LST1))
+                                        ;           (SETQ LST1 (APPEND LST1 #))
+                                        ;           NIL))
+                                        ; 
+                                        ; caught ERROR:
+                                        ;   during macroexpansion of (DOLIST OBJ LST2 ...). Use *BREAK-ON-SIGNALS* to
+                                        ;   intercept.
+                                        ;   
+                                        ;    error while parsing arguments to DEFMACRO DOLIST:
+                                        ;      invalid number of elements in
+                                        ;        OBJ
+                                        ;      to satisfy lambda list
+                                        ;        (VAR LIST &OPTIONAL (SB-IMPL::RESULT)):
+                                        ;      between 2 and 3 expected, but got a non-list
+
+                                        ;     (SB-INT:NAMED-LAMBDA NEW-UNION
+                                        ;         (LST1 LST2)
+                                        ;       (BLOCK NEW-UNION
+                                        ;         (DOLIST OBJ
+                                        ;          LST2
+                                        ;          LST1
+                                        ;           (IF (NOT #)
+                                        ;               (SETQ #)
+                                        ;               NIL))))
+                                        ; 
+                                        ; caught STYLE-WARNING:
+                                        ;   The variable LST1 is defined but never used.
+                                        ; 
+                                        ; caught STYLE-WARNING:
+                                        ;   The variable LST2 is defined but never used.
+                                        ; 
+                                        ; compilation unit finished
+                                        ;   caught 1 ERROR condition
+                                        ;   caught 2 STYLE-WARNING conditions
+NEW-UNION
+CL-USER> (new-union '(h ah f) '(h a s a))
+
+                                        ; No value
+CL-USER> (defun new-union (lst1 lst2) 
+           (if (null lst2)
+               nil
+               (if (not (member obj lst1))
+                   obj
+                   NIL
+                   )))
+
+                                        ; in: DEFUN NEW-UNION
+                                        ;     (MEMBER OBJ LST1)
+                                        ; 
+                                        ; caught WARNING:
+                                        ;   undefined variable: OBJ
+                                        ; 
+                                        ; compilation unit finished
+                                        ;   Undefined variable:
+                                        ;     OBJ
+                                        ;   caught 1 WARNING condition
+WARNING: redefining COMMON-LISP-USER::NEW-UNION in DEFUN
+NEW-UNION
+CL-USER> (defun new-union (lst1 lst2) 
+           (if (null lst2)
+               nil
+               (new-union 
+                (append lst1 (lisp 
+                              (if (not (member (car lst2) lst1))
+                                  (car lst2)
+                                  NIL)))
+                (cdr lst2))))
+
+
+                                        ;     (LISP
+                                        ;      (IF (NOT (MEMBER (CAR LST2) LST1))
+                                        ;          (CAR LST2)
+                                        ;          NIL))
+                                        ; 
+                                        ; caught STYLE-WARNING:
+                                        ;   undefined function: LISP
+                                        ; 
+                                        ; compilation unit finished
+                                        ;   Undefined function:
+                                        ;     LISP
+                                        ;   caught 1 STYLE-WARNING condition
+WARNING: redefining COMMON-LISP-USER::NEW-UNION in DEFUN
+NEW-UNION
+CL-USER> (defun new-union (lst1 lst2) 
+           (if (null lst2)
+               nil
+               (new-union 
+                (append lst1 (list
+                              (if (not (member (car lst2) lst1))
+                                  (car lst2)
+                                  NIL)))
+                (cdr lst2))))
